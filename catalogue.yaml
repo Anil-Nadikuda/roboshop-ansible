@@ -6,7 +6,7 @@
     ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
 
   - name: install nodejs
-    ansible.builtin.package:
+    ansible.builtin.dng:
       name: nodejs
       state: present
 
@@ -44,15 +44,15 @@
     ansible.builtin.systemd_service:
       demon_reload: true
 
-  - name: enable and start catalogue
-    ansible.builtin.service:
-      service: started
-      state: enabled
+  # - name: enable and start catalogue
+  #   ansible.builtin.service:
+  #     service: started
+  #     state: enabled
   
   - name: copy mongodb repo file
     ansible.builtin.copy:
       src: mongo.repo
-      dest: /etc/yum.repos.d/mongo.repo
+      dest: /etc/yum.repos.d/mongodb.repo
 
   - name: install mongodb client
     ansible.builtin.package:
@@ -63,15 +63,15 @@
     ansible.builtin.command: mongo --host mongodb.devaws14.online  --quiet --eval 'db =db.get'
     register: product_count
 
-  - name: printthe count
-    ansible.builtin.debug:
-      msg: "product count: {{product_count}}"
+  # - name: printthe count
+  #   ansible.builtin.debug:
+  #     msg: "product count: {{product_count}}"
 
   - name: load  catalogue data
     ansible.builtin.command: mongo --host mongodb.devaws14.online </app/schema/catalogue.js
-    when: product_count.stdout == 0
+    when: product_count.stdout == "0"
 
-  - name: start and enable catalogur
+  - name: start and enable catalogue
     ansible.builtin.servive:
       name: catalogue
       state: restarted
