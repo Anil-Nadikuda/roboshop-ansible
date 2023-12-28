@@ -1,0 +1,66 @@
+- name: catalogue
+  hosts: catalogue
+  become: yes
+  tasks:
+  - name: disable and enable nodejs 18 v
+    ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
+
+  - name: install nodejs
+    ansible.builtin.package:
+      name: nodejs
+      state: present
+
+  - name: create roboshop user
+    ansible.builtin.user:
+      name: roboshop
+    
+  - name: create app directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  - name: download catalogue appication code
+    ansible.builtin.get_url:
+      url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+      dest: /tmp
+
+  - name: extract catalogue application
+    ansible.builtin.unarchive:
+      src: /tmp/catalogue.zip
+      dest: /app
+      remote_src: yes
+
+  - name: install dependencies
+    ansible.builtin.command: npm install
+      args:
+        chdir: /app
+
+  - name: copy catalogue service file
+    ansible.builtin.copy:
+      src: catalogue.service
+      dest: /etc/systemd/system/catalogue.service
+
+  - name:  system demon-reload
+    ansible.builtin.systemd_service:
+      demon_reload: true
+
+  - name: enable and start catalogue
+    ansible.builtin.service:
+      service: started
+      state: enabled
+  
+  - name: copy mongodb repo file
+    ansible.builtin.copy:
+      src: mongo.repo
+      dest: /etc/yum.repos.d/mongo.repo
+
+  - name: install mongodb
+    ansible.builtin.package:
+      name: mongodb-org-shell
+      state: present
+
+  # - name: loading catalogue schema data
+
+
+
+
