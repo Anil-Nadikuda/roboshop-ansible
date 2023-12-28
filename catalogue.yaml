@@ -40,7 +40,7 @@
       src: catalogue.service
       dest: /etc/systemd/system/catalogue.service
 
-  - name:  system demon-reload
+  - name: system demon reloading
     ansible.builtin.systemd_service:
       demon_reload: true
 
