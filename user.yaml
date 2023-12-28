@@ -27,7 +27,7 @@
 
   - name: download app code
     ansible.builtin.get_url:
-      urc: https://roboshop-builds.s3.amazonaws.com/user.zip
+      url: https://roboshop-builds.s3.amazonaws.com/user.zip
       dest: /tmp
 
   - name: extracting the zip file
