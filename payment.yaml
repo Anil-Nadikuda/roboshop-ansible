@@ -5,8 +5,12 @@
 
   - name: install python3.6
     ansible.builtin.dnf:
-      name: npython36 gcc python3-devel
+      name: "{{item}}"
       state: present
+    loop:
+    - python36
+    - gcc
+    - python3-devel
 
   - name: create roboshop user
     ansible.builtin.user:
