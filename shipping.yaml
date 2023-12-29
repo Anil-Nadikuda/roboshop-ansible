@@ -1,6 +1,8 @@
 - name: shipping
   hosts: shipping
   become: yes
+  vars: 
+    mysql_password: Roboshop@1
   tasks:
   - name: install maven
     ansible.builtin.dnf:
@@ -42,7 +44,7 @@
     args:
       chdir: /app
   
-  - name: setup shipping server
+  - name: copy shipping server
     ansible.builtin.copy:
       src: shipping.service
       dest: /etc/systemd/system/shipping.service
@@ -67,7 +69,7 @@
   - name: load schema
     ansible.builtin.shell: "mysql -h mysql.devaws14.online -uroot -p{{mysql_password}} < /app/schema/shipping.sql"
     when: schema.stdout != "1"
-    
+
   - name: start and enable shipping
     ansible.builtin.service:
       name: shipping
