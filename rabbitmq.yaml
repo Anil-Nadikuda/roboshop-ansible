@@ -14,8 +14,8 @@
       state: present
     
   
-  - name: install rabbitmq
-    ansible.builtin.dnf:
+  - name: start and enable rabbitmq
+    ansible.builtin.service:
       name: rabbitmq-server
       state: restarted
       enabled: yes
