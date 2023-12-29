@@ -1,13 +1,11 @@
-- name: cart
-  hosts: cart
+- name: payment
+  hosts: payment
   become: yes
   tasks:
-  - name: disable and enable nodejs 18 v
-    ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
 
-  - name: install nodejs
+  - name: install python3.6
     ansible.builtin.dnf:
-      name: nodejs
+      name: npython36 gcc python3-devel
       state: present
 
   - name: create roboshop user
@@ -24,34 +22,34 @@
       path: /app
       state: directory
 
-  - name: download cart appication code
+  - name: download payment appication code
     ansible.builtin.get_url:
-      url: https://roboshop-builds.s3.amazonaws.com/cart.zip
+      url: https://roboshop-builds.s3.amazonaws.com/payment.zip
       dest: /tmp
 
-  - name: extract cart application
+  - name: extract payment application
     ansible.builtin.unarchive:
-      src: /tmp/cart.zip
+      src: /tmp/payment.zip
       dest: /app
       remote_src: yes
 
   - name: install dependencies
-    ansible.builtin.command: npm install
+    ansible.builtin.command: pip3.6 install -r requirements.txt
     args:
       chdir: /app
 
-  - name: copy cart service file
+  - name: copy payment service file
     ansible.builtin.copy:
-      src: cart.service
-      dest: /etc/systemd/system/cart.service
+      src: payment.service
+      dest: /etc/systemd/system/payment.service
 
   - name: system demon reloading
     ansible.builtin.systemd_service:
       daemon_reload: true
 
-  - name: start and enable cart
+  - name: start and enable payment
     ansible.builtin.service:
-      name: cart
+      name: payment
       state: restarted
       enabled: yes
 
